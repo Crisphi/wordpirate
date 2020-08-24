@@ -36,11 +36,11 @@
         <img id="image" src="sources/Schiff2.svg" alt="ship" x= 0 y= 0 >
         <svg id ="svg" xmlns="http://www.w3.org/2000/svg" width="252.977mm" height="207.992mm" viewBox="10 15 956 786">
           <g>
-            <text id= "xt1" x="120" y="363" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
+            <text id= "xt1" x="120" y="396" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
             <rect class="holdingItem" id="x1" x="108" y="305" width="163" height="116" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
           </g>
           <g>
-            <text id = "xt2" x="118" y="512" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
+            <text id = "xt2" x="118" y="522" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
             <rect class="holdingItem" id="x2" x="108" y="431" width="163" height="110" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
           </g>
           <g>
@@ -64,6 +64,9 @@
     </div>
     <script type="text/javascript">
       "use strict";
+
+      var svgNS = "http://www.w3.org/2000/svg";
+
       var stack = {
         "Mast":{
           "evil": false
@@ -121,9 +124,10 @@
       var bonuslife = false;
       var time = 0;
       var score = 0;
-      var bonusstacks = {};
       var lane = false;
       var svg = document.getElementById("svg");
+
+      var offset;
 
 
       svg.addEventListener("mousedown", function(event){
@@ -132,7 +136,7 @@
         }else if(event.target.classList.contains("holdingItem")){
           triggerHoldingItem(event);
         }
-      })
+      });
 
       function getGameStats(){
 
@@ -151,10 +155,10 @@
         let objectKeys = Object.keys(stack);
         let itemLength = objectKeys.length;
         let randomIndex = Math.floor(Math.random() * itemLength);
-        console.log(randomIndex);
+        //console.log(randomIndex);
         let itemKey = objectKeys[randomIndex];
         let item = stack[itemKey];
-        console.log(item);
+        //console.log(item);
         if(holding){
           if(stack[itemKey].evil == true){
             return randomizeItem(true);
@@ -179,16 +183,41 @@
         let slotId = slot.id;
         let item = active[slotId];
         console.log(item);
-        initGame();
       }
 
       function triggerHoldingItem(evt){
         let slot = evt.target;
         let slotId = slot.id;
         let item = randomizeItem(true);
+        console.log(item);
+
+        let tempElement = document.createElementNS(svgNS, "rect");
+        tempElement.setAttributeNS(null,"id", "tempHolding");
+        offset = getMousePos(evt);
+
+
+        svg.addEventListener("mousemove", function(event){
+          drag(event);
+        });
 
       }
 
+      function getMousePos(evt){
+        let ctm = svg.getScreenCTM()
+        return{
+          x: (evt.clientX - ctm.e) / ctm.a,
+          y: (evt.clientY - ctm.f) / ctm.d
+        };
+      }
+
+      function drag(evt){
+        let coord = getMousePos(evt);
+        let dx = coord.x - offset.x;
+        let dy = coord.y - offset.y;
+        //transform.setTranslate(dx, dy);
+        console.log(dx, dy);
+
+      }
 
     </script>
   </body>
