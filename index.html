@@ -1,16 +1,195 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Page Title</title>
+    <title>Wordpirate</title>
+    <meta charset="UTF-8">
+    <meta name="author" content="Cristian Ortega Singer">
+    <style>
+
+      #img-svg-wrap{
+        position: relative;
+        display: inline-block;
+      }
+
+      #image{
+        min-width: 100%;
+        height: auto;
+      }
+
+      #svg{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        min-width: 100%;
+        height: 100%;
+      }
+    </style>
   </head>
 
-  <body>
+  <body onload="initGame();">
 
     <h1>This is a Heading</h1>
     <p>This is a paragraph.</p>
-    <svg>
-    </svg>
+    <div id="main">
+      <div id="img-svg-wrap">
+        <img id="image" src="sources/Schiff2.svg" alt="ship" x= 0 y= 0 >
+        <svg id ="svg" xmlns="http://www.w3.org/2000/svg" width="252.977mm" height="207.992mm" viewBox="10 15 956 786">
+          <g>
+            <text id= "xt1" x="120" y="363" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
+            <rect class="holdingItem" id="x1" x="108" y="305" width="163" height="116" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+          </g>
+          <g>
+            <text id = "xt2" x="118" y="512" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
+            <rect class="holdingItem" id="x2" x="108" y="431" width="163" height="110" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+          </g>
+          <g>
+            <text id = "t1" x="288" y="396" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
+            <rect class="shipItem" id="s1" x="278" y="305" width="183" height="116" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+          </g>
+          <g>
+            <text id = "t2" x="479" y="396" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
+            <rect class="shipItem" id="s2" x="469" y="305" width="173" height="116" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+          </g>
+          <g>
+            <text id = "t3" x="288" y="522" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
+            <rect class="shipItem" id="s3" x="278" y="431" width="183" height="110" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+          </g>
+          <g>
+            <text id = "t4" x="479" y="517" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
+            <rect class="shipItem" id="s4" x="469" y="431" width="173" height="110" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <script type="text/javascript">
+      "use strict";
+      var stack = {
+        "Mast":{
+          "evil": false
+        },
+        "Rettungsring":{
+          "evil": false
+        },
+        "Kombüse":{
+          "evil": false
+        },
+        "Kanone":{
+          "evil": false
+        },
+        "Leck":{
+          "evil": true
+        },
+        "Bombe":{
+          "evil": false
+        },
+        "Deck": {
+          "evil": false
+        },
+        "Schatzkiste":{
+          "evil": false
+        },
+        "Steuer":{
+          "evil": false
+        }
+      };
+      var speed = 0;
+      var koTimer = 0;
+      var active = {
+        "s1":{
+          "item":"",
+          "text":"t1",
+          "enabled":true,
+        },
+        "s2":{
+          "item":"",
+          "text":"t2",
+          "enabled":true,
+        },
+        "s3":{
+          "item":"",
+          "text":"t3",
+          "enabled":true,
+        },
+        "s4":{
+          "item":"",
+          "text":"t4",
+          "enabled":true,
+        },
+      };
+      var timebonus = 0;
+      var bonuslife = false;
+      var time = 0;
+      var score = 0;
+      var bonusstacks = {};
+      var lane = false;
+      var svg = document.getElementById("svg");
 
 
+      svg.addEventListener("mousedown", function(event){
+        if(event.target.classList.contains("shipItem")){
+          triggerShipItem(event);
+        }else if(event.target.classList.contains("holdingItem")){
+          triggerHoldingItem(event);
+        }
+      })
+
+      function getGameStats(){
+
+      }
+
+      function initGame(){
+        for(let i in active){
+          active[i].item = randomizeItem();
+          let element = document.getElementById(active[i].text);
+          element.textContent = active[i].item;
+        }
+        console.log(active);
+      }
+
+      function randomizeItem(holding = false){
+        let objectKeys = Object.keys(stack);
+        let itemLength = objectKeys.length;
+        let randomIndex = Math.floor(Math.random() * itemLength);
+        console.log(randomIndex);
+        let itemKey = objectKeys[randomIndex];
+        let item = stack[itemKey];
+        console.log(item);
+        if(holding){
+          if(stack[itemKey].evil == true){
+            return randomizeItem(true);
+          }else{
+            return itemKey;
+          }
+        }else{
+          return itemKey;
+        }
+      }
+
+      function looseRandom(){
+
+      }
+
+      function startKoTimer(){
+
+      }
+
+      function triggerShipItem(evt){
+        let slot = evt.target;
+        let slotId = slot.id;
+        let item = active[slotId];
+        console.log(item);
+        initGame();
+      }
+
+      function triggerHoldingItem(evt){
+        let slot = evt.target;
+        let slotId = slot.id;
+        let item = randomizeItem(true);
+
+      }
+
+
+    </script>
   </body>
 </html>
