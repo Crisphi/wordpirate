@@ -27,14 +27,16 @@
     </style>
   </head>
 
-  <body onload="initGame();">
+  <body>
 
     <h1>This is a Heading</h1>
     <p>This is a paragraph.</p>
     <div id="main">
+      <button type="button" onclick="initGame();">Start Game</button>
+      <span id="score">0</span>
       <div id="img-svg-wrap">
         <img id="image" src="sources/Schiff2.svg" alt="ship" x= 0 y= 0 >
-        <svg id ="svg" xmlns="http://www.w3.org/2000/svg" width="252.977mm" height="207.992mm" viewBox="10 15 956 786">
+        <svg id ="svg" xmlns="http://www.w3.org/2000/svg" width="1000" height="207.992mm" viewBox="10 15 956 786">
           <g>
             <text id= "xt1" x="120" y="396" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
             <rect class="holdingItem" id="x1" x="108" y="305" width="163" height="116" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
@@ -61,6 +63,7 @@
           </g>
         </svg>
       </div>
+      <button type="button" onclick="generateRandomItem();">Generate Item</button>
     </div>
     <script type="text/javascript">
       "use strict";
@@ -120,21 +123,52 @@
           "enabled":true,
         },
       };
+      var holding = {
+        "x1":{
+          "enabled":true,
+          "text": "xt1"
+        },
+        "x2":{
+          "enabled":true,
+          "text":"xt2"
+        }
+      };
       var timebonus = 0;
       var bonuslife = false;
-      var time = 0;
-      var score = 0;
       var lane = false;
+      var placing = false;
+      var tempHoldingItem;
+      var elements;
+      var startTime;
+      var endTime;
+      var score;
+
+      var lane1 = [];
+      var lane2 = [];
+
       var svg = document.getElementById("svg");
+      var scoreElement = document.getElementById("score");
 
       var offset;
+      var transform;
+      var bbox;
+      var boundaryX1 = 0;
+      var boundaryY1 = 0;
+      var boundaryX2 = document.getElementById("svg").width;
+      var boundaryY2 = document.getElementById("svg").height;
+      var minX;
+      var maxX;
+      var minY;
+      var maxY;
 
 
       svg.addEventListener("mousedown", function(event){
-        if(event.target.classList.contains("shipItem")){
+        if((event.target.classList.contains("shipItem")) && (placing == false)){
           triggerShipItem(event);
-        }else if(event.target.classList.contains("holdingItem")){
+        }else if((event.target.classList.contains("holdingItem")) && (placing == false)){
           triggerHoldingItem(event);
+        }else if((placing) && (event.target.classList.contains("shipItem"))){
+          replaceShipItem(event);
         }
       });
 
@@ -148,9 +182,25 @@
           let element = document.getElementById(active[i].text);
           element.textContent = active[i].item;
         }
-        console.log(active);
+        startTime = performance.now();
+        setTimeout(intervalHandler(), 100);
       }
 
+      async function intervalHandler(){
+        setInterval(function () {
+          let tempTime = performance.now();
+          let timeDiff = tempTime -startTime;
+          timeDiff /= 1000;
+          let seconds = timeDiff //Math.round(timeDiff);
+          scoreElement.innerHTML = seconds;
+          console.log(seconds);
+        }, 100);
+      }
+
+
+      function test(){
+        console.log("test");
+      }
       function randomizeItem(holding = false){
         let objectKeys = Object.keys(stack);
         let itemLength = objectKeys.length;
@@ -183,22 +233,61 @@
         let slotId = slot.id;
         let item = active[slotId];
         console.log(item);
+        if(active[slotId].enabled){
+
+
+        }
       }
 
       function triggerHoldingItem(evt){
         let slot = evt.target;
         let slotId = slot.id;
-        let item = randomizeItem(true);
-        console.log(item);
+        if(holding[slotId].enabled){
+          let item = randomizeItem(true);
+          tempHoldingItem  = item;
+          console.log(item);
 
-        let tempElement = document.createElementNS(svgNS, "rect");
-        tempElement.setAttributeNS(null,"id", "tempHolding");
-        offset = getMousePos(evt);
+          elements = createCard();
+          let tempElement = elements[0];
+          tempElement.setAttributeNS(null,"id", "tempHolding");
 
+          offset = getMousePos(evt);
+          let rectWidth = elements[2].getAttributeNS(null, "width");
+          let rectHeight = elements[2].getAttributeNS(null, "height");
+          let textOffsetX = parseInt(offset.x + (rectWidth/8));
+          let textOffsetY = parseInt(offset.y + (rectHeight/2));
+          tempElement.setAttributeNS(null,"x", offset.x + 1);
+          tempElement.setAttributeNS(null, "y", offset.y + 1);
+          elements[2].setAttributeNS(null, "x", offset.x + 1);
+          elements[2].setAttributeNS(null, "y", offset.y + 1);
+          elements[1].setAttributeNS(null, "x", textOffsetX);
+          elements[1].setAttributeNS(null, "y",textOffsetY);
 
-        svg.addEventListener("mousemove", function(event){
-          drag(event);
-        });
+          elements[1].textContent = item;
+
+          let transforms = tempElement.transform.baseVal;
+
+          if(transforms.length === 0 || transforms.getItem(0).type !== SVGTransform.SVG_TRANSFORM_TRANSLATE){
+            let translate = svg.createSVGTransform();
+            translate.setTranslate(0,0);
+            tempElement.transform.baseVal.insertItemBefore(translate,0);
+          }
+
+          transform = transforms.getItem(0);
+          offset.x -= transform.matrix.e;
+          offset.y -= transform.matrix.f;
+
+          bbox = tempElement.getBBox();
+          minX = boundaryX1 - bbox.x;
+          maxX = boundaryX2 -bbox.x - bbox.width;
+          minY = boundaryY1 - bbox.y;
+          maxY = boundaryY2 - bbox.y - bbox.height;
+
+          svg.addEventListener("mousemove", function(event){
+            drag(event);
+          });
+          placing = true;
+        }
 
       }
 
@@ -214,9 +303,90 @@
         let coord = getMousePos(evt);
         let dx = coord.x - offset.x;
         let dy = coord.y - offset.y;
-        //transform.setTranslate(dx, dy);
+
+        if(dx < minX){
+          dx = minX;
+        }else if(dx >maxX){
+          dx = maxX;
+        }
+
+        if(dy < minY){
+          dy = minY;
+        }else if(dy > maxY){
+          dy = maxY;
+        }
+
+        transform.setTranslate(dx + 1, dy + 1);
         console.log(dx, dy);
 
+      }
+
+      function createCard(){
+
+        let group = document.createElementNS(svgNS, "g");
+        svg.appendChild(group);
+
+        let text = document.createElementNS(svgNS, "text");
+        text.setAttributeNS(null, "font-family", "Verdana");
+        text.setAttributeNS(null, "style", "padding: 10px;");
+        text.setAttributeNS(null, "font-size", "20");
+        text.setAttributeNS(null, "fill", "blue");
+
+        group.appendChild(text);
+
+        let rect = document.createElementNS(svgNS, "rect");
+        rect.setAttributeNS(null, "width", "170");
+        rect.setAttributeNS(null, "height", "100");
+        rect.setAttributeNS(null, "style", "fill: transparent; stroke-width:3;stroke:rgb(0,0,0)");
+        group.appendChild(rect);
+
+        let array = [group, text, rect];
+        return array;
+      }
+
+      function replaceShipItem(evt){
+        let slot = evt.target;
+        let slotId = slot.id;
+        active[slotId].item = tempHoldingItem;
+        activateNewItem(slotId);
+        tempHoldingItem = null;
+        placing = false;
+
+        for(let i= 0; i < elements.length; i++){
+          elements[i].remove();
+        }
+      }
+
+      function activateNewItem(slotId){
+        let element = document.getElementById(active[slotId].text);
+        element.textContent = active[slotId].item;
+
+      }
+
+      function generateRandomItem(){
+        let itemkey = randomizeItem();
+        console.log(itemkey);
+        let randomLane = Math.floor(Math.random() * 2);
+        let card = createCard();
+        console.log(card[1]);
+        card[1].textContent = itemkey;
+        if(randomLane == 0){
+          for(let i = 0; i < card.length; i++){
+            card[i].setAttributeNS(null, "x", "800")
+            card[i].setAttributeNS(null, "y","305");
+          }
+          card[1].setAttributeNS(null, "x","810");
+          card[1].setAttributeNS(null, "y", "389");
+          lane1.push(card);
+        }else{
+          for(let i = 0; i < card.length; i++){
+            card[i].setAttributeNS(null, "x", "800")
+            card[i].setAttributeNS(null, "y","431");
+          }
+          card[1].setAttributeNS(null, "x","810");
+          card[1].setAttributeNS(null, "y", "510");
+          lane2.push(card);
+        }
       }
 
     </script>
