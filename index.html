@@ -6,15 +6,19 @@
     <meta name="author" content="Cristian Ortega Singer">
     <style>
 
+      body{
+        //background: black;
+      }
+
       #img-svg-wrap{
         position: relative;
         display: inline-block;
       }
 
-      #image{
+      /**#image{
         min-width: 100%;
         height: auto;
-      }
+      }**/
 
       #svg{
         position: absolute;
@@ -23,6 +27,22 @@
         width: 100%;
         min-width: 100%;
         height: 100%;
+      }
+
+      #shipImg{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 50%;
+        height: 50%;
+      }
+
+      @keyframes barrelMove{
+        0%   {background-color:red; left:0px; top:0px;}
+        25%  {background-color:yellow; left:200px; top:0px;}
+        50%  {background-color:blue; left:200px; top:200px;}
+        75%  {background-color:green; left:0px; top:200px;}
+        100% {background-color:red; left:0px; top:0px;}
       }
     </style>
   </head>
@@ -35,40 +55,42 @@
       <button type="button" onclick="initGame();">Start Game</button>
       <span id="score">0</span>
       <div id="img-svg-wrap">
-        <img id="image" src="sources/Schiff2.svg" alt="ship" x= 0 y= 0 >
-        <svg id ="svg" xmlns="http://www.w3.org/2000/svg" width="1000" height="207.992mm" viewBox="10 15 956 786">
+        <img id="image" src="sources/ASCII-Hintergrund Breit.gif" alt="background" x= 0 y= 0 width="1200px" height="700px">
+        <img id="shipImg" src="sources/SchiffBigSWTransp.png" alt="ship" x= 0 y = 0>
+        <svg id ="svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1000" height="207.992mm" viewBox="10 15 956 786">
           <g>
-            <text id= "xt1" x="120" y="396" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
-            <rect class="holdingItem" id="x1" x="108" y="305" width="163" height="116" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+            <text id= "xt1" x="-107" y="170" font-family="Verdana" style="padding: 10px;" font-size="20" fill="white">Hello</text>
+            <rect class="holdingItem" id="x1" x="-117" y="100" width="120" height="116" style="fill: transparent; stroke-width:3;stroke:white"></rect>
           </g>
           <g>
-            <text id = "xt2" x="118" y="522" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
-            <rect class="holdingItem" id="x2" x="108" y="431" width="163" height="110" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+            <text id = "xt2" x="-107" y="315" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="white">Hello</text>
+            <rect class="holdingItem" id="x2" x="-117" y="245" width="120" height="110" style="fill: transparent; stroke-width:3;stroke:white"></rect>
           </g>
           <g>
-            <text id = "t1" x="288" y="396" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
-            <rect class="shipItem" id="s1" x="278" y="305" width="183" height="116" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+            <text id = "t1" x="25" y="170" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="white">Hello</text>
+            <rect class="shipItem" id="s1" x="15" y="100" width="135" height="116" style="fill: transparent; stroke-width:3;stroke:white"></rect>
           </g>
           <g>
-            <text id = "t2" x="479" y="396" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
-            <rect class="shipItem" id="s2" x="469" y="305" width="173" height="116" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+            <text id = "t2" x="175" y="170" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="white">Hello</text>
+            <rect class="shipItem" id="s2" x="165" y="100" width="130" height="116" style="fill: transparent; stroke-width:3;stroke:white"></rect>
           </g>
           <g>
-            <text id = "t3" x="288" y="522" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
-            <rect class="shipItem" id="s3" x="278" y="431" width="183" height="110" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+            <text id = "t3" x="25" y="315" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="white">Hello</text>
+            <rect class="shipItem" id="s3" x="15" y="245" width="135" height="110" style="fill: transparent; stroke-width:3;stroke:white"></rect>
           </g>
           <g>
-            <text id = "t4" x="479" y="517" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="blue">Hello</text>
-            <rect class="shipItem" id="s4" x="469" y="431" width="173" height="110" style="fill: transparent; stroke-width:3;stroke:rgb(0,0,0)"></rect>
+            <text id = "t4" x="175" y="315" height="110" font-family="Verdana" style="padding: 10px;" font-size="20" fill="white">Hello</text>
+            <rect class="shipItem" id="s4" x="165" y="245" width="130" height="110" style="fill: transparent; stroke-width:3;stroke:white"></rect>
           </g>
         </svg>
       </div>
-      <button type="button" onclick="generateRandomItem();">Generate Item</button>
+      <button type="button" onclick="createBarrel();">Generate Item</button>
     </div>
     <script type="text/javascript">
       "use strict";
 
       var svgNS = "http://www.w3.org/2000/svg";
+      var xlink="http://www.w3.org/1999/xlink";
 
       var stack = {
         "Mast":{
@@ -141,10 +163,16 @@
       var elements;
       var startTime;
       var endTime;
+      var currentTime;
       var score;
+
+      var spawnMultiplicator = 1;
+      var spawnIntervalLimit = 10;
+      var spawnInterval = 1000;
 
       var lane1 = [];
       var lane2 = [];
+      var barrelCounter = 0;
 
       var svg = document.getElementById("svg");
       var scoreElement = document.getElementById("score");
@@ -183,18 +211,32 @@
           element.textContent = active[i].item;
         }
         startTime = performance.now();
-        setTimeout(intervalHandler(), 100);
+        setTimeout(intervalHandler, 100);
       }
 
-      async function intervalHandler(){
+      function intervalHandler(){
+
+        //time
         setInterval(function () {
           let tempTime = performance.now();
           let timeDiff = tempTime -startTime;
           timeDiff /= 1000;
           let seconds = timeDiff //Math.round(timeDiff);
           scoreElement.innerHTML = seconds;
-          console.log(seconds);
+          currentTime = seconds;
         }, 100);
+
+        //spawn Item
+        setInterval(function () {
+          let randomTimeOut = Math.floor(Math.random() * 2000);
+          setTimeout(generateRandomItem, randomTimeOut);
+
+          spawnInterval = parseInt(spawnInterval - (parseInt(currentTime) * (0.01 * spawnMultiplicator)));
+          console.log(spawnInterval);
+          if(spawnInterval >= spawnIntervalLimit){
+            spawnMultiplicator++;
+          }
+        }, spawnInterval);
       }
 
 
@@ -344,6 +386,41 @@
         return array;
       }
 
+      function createBarrel(){
+
+        barrelCounter++;
+
+        let group = document.createElementNS(svgNS, "g");
+        svg.appendChild(group);
+
+        let image = document.createElementNS(svgNS, "image");
+        image.setAttributeNS(null, "width", "100");
+        image.setAttributeNS(null, "height", "100");
+        image.setAttributeNS(null, "href", "sources/Fass3Trans.png");
+        image.setAttributeNS(null, "id", barrelCounter.toString());
+        group.appendChild(image);
+
+        /**let animate = document.createElementNS(svgNS, "animateMotion");
+        animate.setAttributeNS(null, "dur", "5s");
+        animate.setAttributeNS(null, "repeatCount", "2");
+        animate.setAttributeNS(null, "id", barrelCounter.toString()+"a");
+        image.appendChild(animate);**/
+
+        /**let animate = document.createElementNS(svgNS, "animate");
+        animate.setAttributeNS(null, "dur", "5s");
+        animate.setAttributeNS(null, "repeatCount", "indefinite");
+        animate.setAttributeNS(null, "id", barrelCounter.toString()+"a");
+        animate.setAttributeNS(null, "attributeName", "x");
+        animate.setAttributeNS(null, "from", "1200");
+        animate.setAttributeNS(null, "to", "0");
+        image.appendChild(animate);**/
+
+        let item = "";
+
+        let array = [group, image, item];
+        return array;
+      }
+
       function replaceShipItem(evt){
         let slot = evt.target;
         let slotId = slot.id;
@@ -363,7 +440,7 @@
 
       }
 
-      function generateRandomItem(){
+      /**function generateRandomItem(){
         let itemkey = randomizeItem();
         console.log(itemkey);
         let randomLane = Math.floor(Math.random() * 2);
@@ -385,6 +462,45 @@
           }
           card[1].setAttributeNS(null, "x","810");
           card[1].setAttributeNS(null, "y", "510");
+          lane2.push(card);
+        }
+      }**/
+
+      function generateRandomItem(){
+        let itemkey = randomizeItem();
+        console.log(itemkey);
+        let randomLane = Math.floor(Math.random()*2);
+        let card = createBarrel();
+
+        let height;
+        let randomHeight = Math.floor(Math.random()*100);
+        if(randomLane == 0){
+          if(randomHeight < 50){
+            height = 80 - randomHeight;
+          }else{
+            height = 80 + (randomHeight - 50);
+          }
+          for(let i = 0; i < 2; i++){
+            card[i].setAttributeNS(null, "x", "1000");
+            card[i].setAttributeNS(null, "y", height.toString());
+          }
+          card[2] = itemkey;
+          lane1.push(card);
+        }else{
+          if(randomHeight < 25){
+            height = 480 - randomHeight;
+          }else{
+            height = 480 + (randomHeight - 25);
+          }
+          for(let i = 0; i < 2; i++){
+            card[i].setAttributeNS(null, "x", "1000");
+            card[i].setAttributeNS(null, "y", height.toString());
+          }
+          card[2] = itemkey;
+
+          //card[1].setAttributeNS(null, "style", "animation-name: barrelMove; animation-duration: 5s; animation-timing-function: linear; animation-direction: alternate; animation-iteration-count: infinite;");
+          card[1].setAttributeNS(null, "style", "animation: barrelMove 5s linear 2s infinite alternate;");
+
           lane2.push(card);
         }
       }
